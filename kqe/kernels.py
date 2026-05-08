@@ -42,6 +42,25 @@ class PolynomialNormalisedKernel(Kernel):
             * (jnp.dot(x2, x2) + self.c) ** (self.d / 2)
         )
 
+# @dataclass(frozen=True,eq=True)
+# class sinc_kernel(Kernel):
+#     b: Array
+
+    # def __call__(self, x1: Array, x2: Array):
+    #     diff = x1 - x2
+    #     d = diff.shape[0]
+    #     return (1.0 / jnp.pi)**d * jnp.sin(jnp.multiply(self.b, diff) / diff)
+@dataclass(frozen=True, eq=True)
+class Sinc_kernel(Kernel):
+    b: Array
+
+    def __call__(self, x1: Array, x2: Array):
+        diff = x1 - x2
+        d = diff.shape[0]
+        safe_diff = jnp.where(diff == 0, 1.0, diff)
+        ratio = jnp.where(diff == 0, self.b, jnp.sin(self.b * diff) / safe_diff)
+        return jnp.pi**(-d) * jnp.prod(ratio)
+
 
 @jit
 def compute_median_heuristic(x1: Array, x2: Optional[Array] = None) -> jnp.ndarray:

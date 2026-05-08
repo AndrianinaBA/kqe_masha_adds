@@ -1,5 +1,7 @@
+
 from functools import partial
 from typing import Callable
+from scipy.stats import qmc, norm
 
 import jax.numpy as jnp
 from jax import Array, jit, random, vmap
@@ -45,7 +47,7 @@ def get_mus(X, Y, mus, num_mus, key):
 
 
 @partial(jit, static_argnames=["normalise", "nu_shape", "centered"])
-def compute_tau_power_p(
+def compute_tau_power_p_qmc(
     key,
     kernel_fn,
     mus,
@@ -62,7 +64,25 @@ def compute_tau_power_p(
     if centered and mmd_sq is None:
         mmd_sq = mmd_squared_V_statistic(X, Y, kernel_fn)
 
-    coeffs_i = random.normal(key, (mus.shape[0],))
+    # coeffs_i = random.normal(key, (mus.shape[0],)) ## Replace this with the qmc
+    sampler = qmc.Sobol(d=1, scramble=True)
+    # radius = 0.5 / mus.shape[0] Only for PoissonDisk
+    # sampler = qmc.PoissonDisk(d=1, radius=radius)
+
+    # sampler = qmc.Halton(d=1, scramble=True)
+    uniform_samples = sampler.random(n=mus.shape[0],)        # uniform in [0, 1)
+
+    # coeffs_i = norm.ppf(uniform_samples)  
+    # coeffs_i = coeffs_i.reshape(-1,)
+
+    # sampler = qmc.Sobol(d=1, scramble=True)
+    # n = 1 << (mus.shape[0] - 1).bit_length()  # next power of 2
+    # uniform_samples = sampler.random(n=n)      # sample power-of-2 points
+    # uniform_samples = uniform_samples[:mus.shape[0]]  # slice back to what you need
+
+    coeffs_i = norm.ppf(uniform_samples)
+    coeffs_i = coeffs_i.reshape(-1,)
+
     f_i_X = rkhs_function(coeffs_i, kernel_fn, mus, X)
     f_i_Y = rkhs_function(coeffs_i, kernel_fn, mus, Y)
 
@@ -90,60 +110,12 @@ def compute_tau_power_p(
     return tau_power_p
 
 
-# def compute_tau_power_p(
-#     key,
-#     kernel_fn,
-#     mus,
-#     X,
-#     Y,
-#     nu_shape,
-#     nu_ratio,
-#     normalise,
-#     p,
-#     centered=False,
-#     mmd_sq=None,
-# ):
-    #     """Compute the power-p directional differences."""
-#     if centered and mmd_sq is None:
-#         mmd_sq = mmd_squared_V_statistic(X, Y, kernel_fn)
-# 
-#     coeffs_i = random.normal(key, (mus.shape[0],))
-#     f_i_X = rkhs_function(coeffs_i, kernel_fn, mus, X)
-#     f_i_Y = rkhs_function(coeffs_i, kernel_fn, mus, Y)
-# 
-#     norm_f_i_sq = rkhs_norm_sq(coeffs_i, kernel_fn, mus) + 1e-6 if normalise else 1.0
-# 
-#     if centered:
-#         power_p_diff = jnp.power(
-#             jnp.abs(
-#                 (
-#                     (jnp.sort(f_i_X) - jnp.sort(f_i_Y)) ** 2
-#                     - (jnp.mean(f_i_X) - jnp.mean(f_i_Y)) ** 2
-#                 )
-#                 / norm_f_i_sq
-#                 + mmd_sq
-#             ),
-#             p / 2,
-#         )
-#     # else:
-#         # # in compute_tau_power_p, the else branch should be:
-#     else:
-#         power_p_diff = jnp.power(jnp.abs(jnp.sort(f_i_X) - jnp.sort(f_i_Y)), p)
-#         weights = get_weights(f_i_X.shape[0], nu_shape, nu_ratio)
-#         tau_power_p = jnp.dot(weights, power_p_diff) / jnp.power(norm_f_i_sq, p / 2)
-#         power_p_diff = jnp.power(jnp.abs(jnp.sort(f_i_X) - jnp.sort(f_i_Y)), p)
-#         
-#         weights = get_weights(f_i_X.shape[0], nu_shape, nu_ratio)
-#         tau_power_p = jnp.dot(weights, power_p_diff)
-# 
-#     return tau_power_p
-
 
 @partial(
     jit,
     static_argnames=["num_projections", "num_mus", "normalise", "nu_shape", "metric"],
 )
-def compute_distance(
+def compute_distance_qmc(
     X,
     Y,
     num_projections,
@@ -170,7 +142,7 @@ def compute_distance(
     mmd_sq = mmd_squared_V_statistic(X, Y, kernel_fn) if centered else None
 
     projections = vmap(
-        lambda key: compute_tau_power_p(
+        lambda key: compute_tau_power_p_qmc(
             key,
             kernel_fn=kernel_fn,
             mus=mus,
@@ -205,7 +177,7 @@ def ekqd(
     p=2,
 ):
     """Compute the e-KQD distance."""
-    return compute_distance(
+    return compute_distance_qmc(
         X,
         Y,
         num_projections,
@@ -234,7 +206,7 @@ def ekqd_centered(
     p=2,
 ):
     """Compute the e-KQD-Centered distance."""
-    return compute_distance(
+    return compute_distance_qmc(
         X,
         Y,
         num_projections,
@@ -263,7 +235,7 @@ def supkqd(
     p=2,
 ):
     """Compute the sup-KQD distance."""
-    return compute_distance(
+    return compute_distance_qmc(
         X,
         Y,
         num_projections,

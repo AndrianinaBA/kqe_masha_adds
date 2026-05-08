@@ -1,3 +1,4 @@
+
 import json
 from collections import OrderedDict
 from os import path
@@ -9,18 +10,18 @@ from tqdm.auto import tqdm
 
 from kqe.kernels import (GaussianKernel, PolynomialKernel, Sinc_kernel,
                          compute_median_heuristic)
-from kqe.kqd import ekqd, ekqd_centered, supkqd
+from kqe.kqd_qmc import ekqd, ekqd_centered, supkqd
 from kqe.local_config import DATADIR, LOGSDIR
 from kqe.logging_utils import info, init_logging
-from kqe.mmd import (mmd_linear_estimator, mmd_multi_diagonal_estimator,
-                     mmd_squared_U_statistic)
+# from kqe.mmd import (mmd_linear_estimator, mmd_multi_diagonal_estimator,
+#                      mmd_squared_U_statistic)
 from kqe.testing import permutation_test
 
 if __name__ == "__main__":
     # ---------------------------------------------------------------------
     # Define experiment and initialize logging
     # ---------------------------------------------------------------------
-    experiment_name = "power_decay"
+    experiment_name = "power_decay_qmc"
     init_logging(filename=path.join(LOGSDIR, f"{experiment_name}.log"))
 
     # ---------------------------------------------------------------------

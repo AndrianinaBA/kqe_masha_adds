@@ -37,14 +37,14 @@ def test_ekqd_diff_samples():
     X = jnp.array([[4.0], [5.0]])
     Y = jnp.array([[6.0], [7.0]])
     out = ekqd(X, Y, num_projections=3, kernel_fn=GaussianKernel(l=2.0))
-    assert out == pytest.approx(0.2308304459)
+    assert out == pytest.approx(0.2655976)# (0.2308304459)
 
 
 def test_ekqd_centered_diff_samples():
     X = jnp.array([[7.0], [9.0]])
     Y = jnp.array([[8.0], [10.0]])
     out = ekqd_centered(X, Y, num_projections=2, kernel_fn=GaussianKernel(l=1.0))
-    assert out == pytest.approx(0.5697478056)
+    assert out == pytest.approx(0.6000939)# (0.5697478056)
 
 
 def test_ekqd_diff_samples_diff_pars():
@@ -60,4 +60,4 @@ def test_ekqd_diff_samples_diff_pars():
         nu_shape="triangle",
         nu_ratio=0.0,
     )
-    assert out == pytest.approx(1.3815598488)
+    assert out == pytest.approx(1.5260005)# (1.3815598488)

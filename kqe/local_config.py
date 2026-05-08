@@ -1,7 +1,7 @@
 import platform
 from os import path
 
-ROOTDIR = None
+ROOTDIR = "/home/supercell/Desktop/kqe/kqe"
 
 DATADIR = path.join(ROOTDIR, "data")
 FIGSDIR = path.join(ROOTDIR, "figs")

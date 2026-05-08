@@ -1,3 +1,4 @@
+
 import json
 from collections import OrderedDict
 from os import path
@@ -7,7 +8,7 @@ from jax import random
 from tqdm.auto import tqdm
 
 from kqe.kernels import PolynomialKernel
-from kqe.kqd import ekqd, ekqd_centered, supkqd
+from kqe.kqd_qmc import ekqd, ekqd_centered, supkqd
 from kqe.local_config import DATADIR, LOGSDIR
 from kqe.logging_utils import info, init_logging
 from kqe.mmd import (mmd_linear_estimator, mmd_multi_diagonal_estimator,
@@ -16,10 +17,10 @@ from kqe.testing import permutation_test
 
 if __name__ == "__main__":
     # ---------------------------------------------------------------------
-    # Define experiment and initialize logging
+    # Define experiment and initialize log2ging
     # ---------------------------------------------------------------------
-    experiment_name = "laplace_vs_gaussian"
-    init_logging(filename=path.join(LOGSDIR, f"{experiment_name}.log"))
+    experiment_name = "laplace_vs_gaussian_qmc"
+    init_logging(filename=path.join(LOGSDIR, f"{experiment_name}.log2"))
 
     # ---------------------------------------------------------------------
     # Define parameters
