@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # -------------------------------------------------------------------------
     # Define parameters
     # -------------------------------------------------------------------------
-    num_samples_lst = [100, 500, 1000, 1500, 2000]
+    num_samples_lst = [100, 500, 1000]#, 1500, 2000]
     img_size = 64
     batch_size = 20
     num_runs = 200
@@ -102,9 +102,9 @@ if __name__ == "__main__":
             ("ekqd_centered_2", ekqd_centered),
             ("supkqd_1", supkqd),
             ("supkqd_2", supkqd),
-            ("mmdmulti", mmd_multi_diagonal_estimator),
-            ("mmdlin", mmd_linear_estimator),
-            ("mmd", mmd_squared_U_statistic),
+            # ("mmdmulti", mmd_multi_diagonal_estimator),
+            # ("mmdlin", mmd_linear_estimator),
+            # ("mmd", mmd_squared_U_statistic),
             ("ekqd_tr", ekqd),
             ("ekqd_rtr", ekqd),
             ("ekqd_sup", ekqd),
@@ -199,7 +199,7 @@ if __name__ == "__main__":
                 "nu_ratio": 0.0,
                 "p": 2,
             },
-            f"mmdmulti": {"num_diagonals": int(jnp.log(num_samples)) ** 2},
+            # f"mmdmulti": {"num_diagonals": int(jnp.log(num_samples)) ** 2},
             f"ekqd_2_mu_normal": {
                 "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,

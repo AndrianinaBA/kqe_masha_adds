@@ -10,7 +10,8 @@ from tqdm.auto import tqdm
 
 from kqe.kernels import (GaussianKernel, PolynomialKernel, Sinc_kernel,
                          compute_median_heuristic)
-from kqe.kqd_qmc import ekqd, ekqd_centered, supkqd
+# from kqe.kqd_qmc import ekqd, ekqd_centered, supkqd
+from kqe.kqd import ekqd, ekqd_centered, supkqd
 from kqe.local_config import DATADIR, LOGSDIR
 from kqe.logging_utils import info, init_logging
 # from kqe.mmd import (mmd_linear_estimator, mmd_multi_diagonal_estimator,
@@ -21,13 +22,14 @@ if __name__ == "__main__":
     # ---------------------------------------------------------------------
     # Define experiment and initialize logging
     # ---------------------------------------------------------------------
-    experiment_name = "power_decay_qmc"
+    experiment_name = "power_decay_qmc_type_1_mc"
     init_logging(filename=path.join(LOGSDIR, f"{experiment_name}.log"))
 
     # ---------------------------------------------------------------------
     # Define parameters
     # ---------------------------------------------------------------------
     dims = [32, 64, 128, 256, 512]
+    # dims = [64]
     num_samples = 200
     num_runs = 300
 
@@ -136,7 +138,8 @@ if __name__ == "__main__":
                     key_X, mean=jnp.zeros(dim), cov=jnp.eye(dim), shape=(num_samples,)
                 )
                 Y = jax.random.multivariate_normal(
-                    key_Y, mean=jnp.zeros(dim), cov=Sigma, shape=(num_samples,)
+                    # key_Y, mean=jnp.zeros(dim), cov=Sigma, shape=(num_samples,)
+                    key_Y, mean=jnp.zeros(dim), cov=jnp.eye(dim), shape=(num_samples,)
                 )
 
                 # Kernel with median heuristic
@@ -187,6 +190,7 @@ if __name__ == "__main__":
                     "distance_fn_kwargs": distance_fn_kwargs,
                 },
                 open(path.join(DATADIR, f"{experiment_name}.json"), "w"),
+                indent=4,
             )
 
             info(

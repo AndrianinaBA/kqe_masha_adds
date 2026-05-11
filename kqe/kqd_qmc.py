@@ -65,7 +65,7 @@ def compute_tau_power_p_qmc(
         mmd_sq = mmd_squared_V_statistic(X, Y, kernel_fn)
 
     # coeffs_i = random.normal(key, (mus.shape[0],)) ## Replace this with the qmc
-    sampler = qmc.Sobol(d=1, scramble=True)
+    sampler = qmc.Sobol(d=1, scramble=True, rng=None) #, bits=30)
     # radius = 0.5 / mus.shape[0] Only for PoissonDisk
     # sampler = qmc.PoissonDisk(d=1, radius=radius)
 

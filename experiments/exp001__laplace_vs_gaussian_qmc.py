@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------------------
     # Define experiment and initialize log2ging
     # ---------------------------------------------------------------------
-    experiment_name = "laplace_vs_gaussian_qmc"
+    experiment_name = "laplace_vs_gaussian_qmc_type_1_normal"
     init_logging(filename=path.join(LOGSDIR, f"{experiment_name}.log2"))
 
     # ---------------------------------------------------------------------
@@ -66,42 +66,42 @@ if __name__ == "__main__":
 
         distance_fn_kwargs = {
             "ekqd_1": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 1,
             },
             "ekqd_2": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 2,
             },
             "ekqd_centered_1": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 1,
             },
             "ekqd_centered_2": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 2,
             },
             "supkqd_1": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 1,
             },
             "supkqd_2": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 2,
             },
-            # "mmdmulti": {"num_diagonals": int(jnp.log2(num_samples)) ** 2},
+            # "mmdmulti": {"num_diagonals": int(jnp.log(num_samples)) ** 2},
         }
 
         for distance_name, distance_fn in tqdm(
@@ -123,12 +123,16 @@ if __name__ == "__main__":
                 mean = 0.0  # Gaussian mean
                 variance = sigma**2  # Gaussian variance
                 scale = jnp.sqrt(variance / 2)  # Laplace scale parameter
-
-                X = random.laplace(key_laplace, shape=data_shape) * scale + mean
                 std = jnp.sqrt(variance)  # Gaussian std
+
+                X = random.normal(key_laplace, shape=data_shape) * std + mean
+                # X = random.laplace(key_laplace, shape=data_shape) * scale + mean
 
                 Y = random.normal(key_normal, shape=data_shape) * std + mean
 
+                # Y = random.laplace(key_normal, shape=data_shape) * scale + mean
+                # std = jnp.sqrt(variance)  # Gaussian std
+                
                 kernel_fn = PolynomialKernel(c=1, d=3)
 
                 # Permutation test
@@ -159,6 +163,7 @@ if __name__ == "__main__":
                     "distance_fn_kwargs": distance_fn_kwargs,
                 },
                 open(path.join(DATADIR, f"{experiment_name}.json"), "w"),
+                indent=4,
             )
 
             info(

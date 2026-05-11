@@ -65,42 +65,42 @@ if __name__ == "__main__":
 
         distance_fn_kwargs = {
             "ekqd_1": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 1,
             },
             "ekqd_2": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 2,
             },
             "ekqd_centered_1": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 1,
             },
             "ekqd_centered_2": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 2,
             },
             "supkqd_1": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 1,
             },
             "supkqd_2": {
-                "num_projections": int(jnp.log2(num_samples)),
+                "num_projections": int(jnp.log(num_samples)),
                 "normalise": True,
-                "num_mus": int(jnp.log2(num_samples)),
+                "num_mus": int(jnp.log(num_samples)),
                 "p": 2,
             },
-            # "mmdmulti": {"num_diagonals": int(jnp.log2(num_samples)) ** 2},
+            # "mmdmulti": {"num_diagonals": int(jnp.log(num_samples)) ** 2},
         }
 
         for distance_name, distance_fn in tqdm(
@@ -139,6 +139,7 @@ if __name__ == "__main__":
                     num_permutations=300,
                     batch_size=150,
                     level=0.05,
+                    # return_p_val=True,
                     **dict(
                         kernel_fn=kernel_fn, **distance_fn_kwargs.get(distance_name, {})
                     ),
@@ -158,6 +159,7 @@ if __name__ == "__main__":
                     "distance_fn_kwargs": distance_fn_kwargs,
                 },
                 open(path.join(DATADIR, f"{experiment_name}.json"), "w"),
+                indent=4,
             )
 
             info(

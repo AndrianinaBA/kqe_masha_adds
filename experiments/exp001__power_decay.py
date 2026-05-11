@@ -142,8 +142,8 @@ if __name__ == "__main__":
                 if distance_name.startswith("esw"):
                     kernel_fn = PolynomialKernel(c=0, d=1)
                 else:
-                    kernel_fn = GaussianKernel(l=float(compute_median_heuristic(X, Y)))
-                    # kernel_fn = Sinc_kernel(b=jnp.ones(dim))
+                    # kernel_fn = GaussianKernel(l=float(compute_median_heuristic(X, Y)))
+                    kernel_fn = Sinc_kernel(b=jnp.ones(dim))
 
                 if distance_name.endswith("mu_normal"):
                     q25, q75 = jnp.percentile(
@@ -186,6 +186,7 @@ if __name__ == "__main__":
                     "distance_fn_kwargs": distance_fn_kwargs,
                 },
                 open(path.join(DATADIR, f"{experiment_name}.json"), "w"),
+                indent=4,
             )
 
             info(

@@ -4,6 +4,7 @@ from os import path
 ROOTDIR = "/home/supercell/Desktop/kqe/kqe"
 
 DATADIR = path.join(ROOTDIR, "data")
+RESDIR = path.join(ROOTDIR, "results")
 FIGSDIR = path.join(ROOTDIR, "figs")
 LOGSDIR = path.join(ROOTDIR, "logs")
 MNISTDIR = path.join(ROOTDIR, "data", "MNIST_features")
